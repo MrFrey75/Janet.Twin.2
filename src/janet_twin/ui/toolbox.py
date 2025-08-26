@@ -1,11 +1,12 @@
 # toolbox.py
 from PyQt6.QtWidgets import QDockWidget, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
-from settings import SettingsPanel
-from conversation_history_tool import ConversationHistoryTool
-from file_manager_tool import FileManagerTool
-from log_viewer_tool import LogViewerTool
-from raw_data_tool import RawDataTool
+
+from .tools.settings import SettingsPanel
+from .tools.conversation_history_tool import ConversationHistoryTool
+from .tools.file_manager_tool import FileManagerTool
+from .tools.log_viewer_tool import LogViewerTool
+from .tools.raw_data_tool import RawDataTool
 
 
 class ToolboxDock:

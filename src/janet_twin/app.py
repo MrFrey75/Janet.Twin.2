@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication
-from main_window import GPTClientUI
+from ui.main_window import GPTClientUI
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

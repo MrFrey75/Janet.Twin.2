@@ -1,9 +1,11 @@
+# main_window.py
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QScrollArea, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 
-from toolbox import ToolboxDock
-from chat import ChatArea
+# Corrected import statement
+from .toolbox import ToolboxDock
+from .chat import ChatArea
 
 class GPTClientUI(QMainWindow):
     def __init__(self):
