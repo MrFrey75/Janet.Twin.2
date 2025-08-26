@@ -21,9 +21,11 @@ class GPTClientUI(QMainWindow):
         self.toolbar.addSeparator()
 
         # Tool buttons
+        # Tool buttons
+        tool_names = ["Conversation History", "File Manager", "Log Viewer", "Raw Data"]
         self.tool_actions = []
-        for i in range(1, 5):
-            action = QAction(f"Tool {i}", self)
+        for name in tool_names:
+            action = QAction(name, self)
             self.toolbar.addAction(action)
             self.tool_actions.append(action)
         self.toolbar.addSeparator()

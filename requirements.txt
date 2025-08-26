@@ -1,3 +1,4 @@
+pyqt6-sip
 # Core
 pyqt6==6.7.0
 openai==1.43.0
