@@ -4,6 +4,8 @@ pyqt6==6.7.0
 openai==1.43.0
 python-dotenv==1.0.1
 
+google-generativeai
+
 # Optional / nice to have
 requests==2.32.3
 
