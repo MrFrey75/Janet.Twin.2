@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "janet-twin"
+version = "0.1.0"
+description = "Conversational PyQt client for GPT"
+authors = [{ name = "Your Name", email = "your@email.com" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "pyqt6>=6.7.0",
+    "openai>=1.43.0",
+    "python-dotenv>=1.0.1",
+    "requests>=2.32.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "flake8", "mypy"]
+
+[project.scripts]
+janet-twin = "janet_twin.__main__:main"

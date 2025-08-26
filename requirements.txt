@@ -1,0 +1,13 @@
+# Core
+pyqt6==6.7.0
+openai==1.43.0
+python-dotenv==1.0.1
+
+# Optional / nice to have
+requests==2.32.3
+
+# Dev only (put in requirements-dev.txt too if you want separation)
+pytest==8.3.3
+black==24.8.0
+flake8==7.1.1
+mypy==1.12.0
