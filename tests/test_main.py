@@ -1,7 +1,7 @@
 import pytest
 
 # Import after sys.path is set
-from janet_twin.app import GPTClientUI  # <-- adjust if the class is actually in app.py
+from src.janet_twin.ui.main_window import GPTClientUI  # <-- adjust if the class is actually in app.py
 
 @pytest.fixture
 def ui_instance():
