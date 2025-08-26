@@ -5,5 +5,3 @@ This document outlines the integration of the Gemini API into the Janet Twin per
 ## API Usage
 
 This section provides a basic example of how to make a call to the Gemini API using the google-generativeai library.
-
-diffs only
