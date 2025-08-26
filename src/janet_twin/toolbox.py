@@ -1,6 +1,11 @@
-from PyQt6.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QLabel, QListWidget, QTextEdit, QComboBox
+# toolbox.py
+from PyQt6.QtWidgets import QDockWidget, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 from settings import SettingsPanel
+from conversation_history_tool import ConversationHistoryTool
+from file_manager_tool import FileManagerTool
+from log_viewer_tool import LogViewerTool
+from raw_data_tool import RawDataTool
 
 
 class ToolboxDock:
@@ -31,56 +36,19 @@ class ToolboxDock:
             else:
                 self.toolbox_layout.removeItem(item)
 
+        tool_map = {
+            "Conversation History": ConversationHistoryTool(),
+            "File Manager": FileManagerTool(),
+            "Log Viewer": LogViewerTool(),
+            "Raw Data": RawDataTool(),
+        }
+
+        # Handle Settings separately because it requires the layout as a parameter.
         if name == "Settings":
-            SettingsPanel(self.toolbox_layout).add_settings_widgets()
-        elif name == "Conversation History":
-            self.add_conversation_history_widgets()
-        elif name == "File Manager":
-            self.add_file_manager_widgets()
-        elif name == "Log Viewer":
-            self.add_log_viewer_widgets()
-        elif name == "Raw Data":
-            self.add_raw_data_widgets()
+            settings_panel = SettingsPanel(self.toolbox_layout)
+            settings_panel.add_settings_widgets()
+        elif name in tool_map:
+            self.toolbox_layout.addWidget(tool_map[name])
 
         self.toolbox_dock.setVisible(True)
         self.toolbox_dock.raise_()
-
-    def add_conversation_history_widgets(self):
-        """Adds widgets for viewing conversation history."""
-        label = QLabel("Conversation History")
-        self.toolbox_layout.addWidget(label)
-        history_list = QListWidget()
-        history_list.addItem("Chat 1: August 26, 2025")
-        history_list.addItem("Chat 2: August 25, 2025")
-        self.toolbox_layout.addWidget(history_list)
-
-    def add_file_manager_widgets(self):
-        """Adds widgets for managing uploaded files."""
-        label = QLabel("Files Uploaded")
-        self.toolbox_layout.addWidget(label)
-        file_list = QListWidget()
-        file_list.addItem("document.pdf")
-        file_list.addItem("notes.txt")
-        self.toolbox_layout.addWidget(file_list)
-
-    def add_log_viewer_widgets(self):
-        """Adds widgets for viewing log files."""
-        log_label = QLabel("Select a Log File:")
-        self.toolbox_layout.addWidget(log_label)
-        log_selector = QComboBox()
-        log_selector.addItem("app.log")
-        log_selector.addItem("debug.log")
-        self.toolbox_layout.addWidget(log_selector)
-        log_display = QTextEdit()
-        log_display.setReadOnly(True)
-        log_display.setPlaceholderText("Log content will appear here...")
-        self.toolbox_layout.addWidget(log_display)
-
-    def add_raw_data_widgets(self):
-        """Adds widgets for viewing raw streaming data."""
-        label = QLabel("Raw Streaming Data (last 1000 lines)")
-        self.toolbox_layout.addWidget(label)
-        raw_data_display = QTextEdit()
-        raw_data_display.setReadOnly(True)
-        raw_data_display.setPlaceholderText("Raw data will stream here...")
-        self.toolbox_layout.addWidget(raw_data_display)

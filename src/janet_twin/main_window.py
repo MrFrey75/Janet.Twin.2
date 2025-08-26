@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QScrollArea
-from PyQt6.QtGui import QAction
+from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QScrollArea, QSizePolicy
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 
 from toolbox import ToolboxDock
@@ -21,17 +21,20 @@ class GPTClientUI(QMainWindow):
         self.toolbar.addSeparator()
 
         # Tool buttons
-        # Tool buttons
         tool_names = ["Conversation History", "File Manager", "Log Viewer", "Raw Data"]
         self.tool_actions = []
         for name in tool_names:
             action = QAction(name, self)
             self.toolbar.addAction(action)
             self.tool_actions.append(action)
-        self.toolbar.addSeparator()
 
-        # Settings
-        self.settings_action = QAction("Settings", self)
+        # Create a spacer widget to push the settings icon to the right
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.toolbar.addWidget(spacer)
+
+        # Settings with gear icon
+        self.settings_action = QAction(QIcon.fromTheme("preferences-system"), "Settings", self)
         self.toolbar.addAction(self.settings_action)
 
         # Main chat area

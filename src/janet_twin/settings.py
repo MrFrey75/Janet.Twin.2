@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton
+from PyQt6.QtCore import Qt
 
 class SettingsPanel:
     """Provides settings widgets to insert into a parent layout."""
