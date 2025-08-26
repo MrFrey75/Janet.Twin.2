@@ -4,8 +4,8 @@ set -e
 case "$1" in
   reset-db)
     echo "Resetting SQLite dev DB..."
-    rm -f data/dev.db
-    python -c "import sqlite3; sqlite3.connect('data/dev.db').close()"
+    rm -f data/database/janet-dev.sqlite
+    python -c "import sqlite3; sqlite3.connect('data/database/data/database/janet-dev.sqlite').close()"
     ;;
   install)
     echo "Installing dependencies..."

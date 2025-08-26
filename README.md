@@ -46,6 +46,9 @@ source .venv/bin/activate
 # install dependencies
 pip install -r requirements-dev.txt
 
+# if needed
+chmod +x ./scripts/dev.sh
+
 # optional: reset local dev database
 ./scripts/dev.sh reset-db
 

@@ -24,7 +24,7 @@ python -m janet_twin
 - **Frontend:** PyQt6 GUI  
 - **Core Engine:** GPT API client  
 - **Plugin System:** Python modules under `src/janet_twin/plugins/`  
-- **Persistence:** SQLite database (`data/dev.db`), can be reset with:
+- **Persistence:** SQLite database (`data/database/janet-dev.sqlite`), can be reset with:
 
 ```bash
 ./scripts/dev.sh reset-db
