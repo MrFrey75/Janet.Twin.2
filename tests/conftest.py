@@ -1,7 +1,14 @@
 # tests/conftest.py
+import pytest
 import sys
-import os
+from PyQt6.QtWidgets import QApplication
 
-# Add src/ to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
-
+@pytest.fixture(scope="session")
+def qapp():
+    """
+    Ensure a single QApplication instance exists for the whole test session.
+    """
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication(sys.argv)
+    return app
