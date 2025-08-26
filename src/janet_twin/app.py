@@ -2,7 +2,7 @@ import sys
 import json
 import os
 from PyQt6.QtWidgets import QApplication
-from ui.main_window import GPTClientUI
+from .ui.main_window import GPTClientUI
 
 # Updated path
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.json")
