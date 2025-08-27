@@ -1,60 +1,53 @@
-from PyQt6.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QApplication
+import yaml
+
+from PyQt6.QtWidgets import QDockWidget, QTabWidget, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
-
-from .tools.settings_console import SettingsPanel
+from src.janet_twin.logger import logger
 from .tools.conversation_history_tool import ConversationHistoryTool
-from .tools.file_manager_tool import FileManagerTool
 from .tools.log_viewer_tool import LogViewerTool
+from .tools.file_manager_tool import FileManagerTool
 from .tools.raw_data_tool import RawDataTool
+from .tools.settings_console import SettingsPanel
 
 
-class ToolboxDock:
-    """Right-side dock for tools and settings."""
+class ToolboxDock(QDockWidget):
+    """
+    A dockable toolbox with various developer-focused tools.
+    """
 
-    def __init__(self, main_window):
-        self.main_window = main_window
-        self.toolbox_dock = QDockWidget("Toolbox", main_window)
-        self.toolbox_dock.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea)
-        self.toolbox_dock.setFloating(False)
-        self.toolbox_dock.setVisible(False)
+    def __init__(self, parent=None):
+        super().__init__("Toolbox", parent)
+        self.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea | Qt.DockWidgetArea.LeftDockWidgetArea)
+        self.parent = parent
 
-        self.toolbox_widget = QWidget()
-        self.toolbox_layout = QVBoxLayout(self.toolbox_widget)
-        self.toolbox_widget.setLayout(self.toolbox_layout)
-        self.toolbox_dock.setWidget(self.toolbox_widget)
-
-        main_window.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.toolbox_dock)
-
-        # Store a single instance of SettingsPanel
-        self.settings_panel = None
-
-    def show_toolbox(self, name: str):
-        self.toolbox_dock.setWindowTitle(name)
-
-        # Clear previous widgets except the Settings panel instance
-        for i in reversed(range(self.toolbox_layout.count())):
-            item = self.toolbox_layout.itemAt(i)
-            if item.widget() and item.widget() is not self.settings_panel:
-                item.widget().setParent(None)
-            elif not item.widget():
-                self.toolbox_layout.removeItem(item)
-
-        tool_map = {
+        self.tools = {
             "Conversation History": ConversationHistoryTool(),
             "File Manager": FileManagerTool(),
             "Log Viewer": LogViewerTool(),
             "Raw Data": RawDataTool(),
+            "Settings": SettingsPanel(self.parent)
         }
 
-        if name == "Settings":
-            app = QApplication.instance()
-            if self.settings_panel is None:
-                # Instantiate SettingsPanel once with the app reference
-                self.settings_panel = SettingsPanel(parent=None, app=app)
-            # Add the panel to the layout (reusing the instance)
-            self.toolbox_layout.addWidget(self.settings_panel)
-        elif name in tool_map:
-            self.toolbox_layout.addWidget(tool_map[name])
+        self.tab_widget = QTabWidget()
+        for name, tool in self.tools.items():
+            self.tab_widget.addTab(tool, name)
 
-        self.toolbox_dock.setVisible(True)
-        self.toolbox_dock.raise_()
+        main_widget = QWidget()
+        layout = QVBoxLayout(main_widget)
+        layout.addWidget(self.tab_widget)
+        self.setWidget(main_widget)
+        self.hide()
+
+    def show_toolbox(self, tool_name):
+        """
+        Shows the toolbox with a specific tab selected.
+        """
+        if tool_name in self.tools:
+            index = self.tab_widget.indexOf(self.tools[tool_name])
+            if index != -1:
+                self.tab_widget.setCurrentIndex(index)
+                if self.isVisible():
+                    self.hide()
+                else:
+                    self.show()
+

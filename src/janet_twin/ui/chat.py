@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QLabel, QSizePolicy
 import random
 from src.janet_twin.utils.settings_utility import SettingsUtility
 
+
 class ChatArea:
     """Handles chat bubbles and mock GPT responses."""
 
@@ -20,6 +21,14 @@ class ChatArea:
         self.chat_layout.addWidget(bubble)
         # Auto-scroll
         self.chat_scroll.verticalScrollBar().setValue(self.chat_scroll.verticalScrollBar().maximum())
+
+    def clear_chat(self):
+        """Removes all chat bubbles from the layout."""
+        while self.chat_layout.count():
+            item = self.chat_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
 
     def mock_gpt_response(self, user_text):
         responses = [

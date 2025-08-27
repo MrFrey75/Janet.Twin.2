@@ -1,4 +1,4 @@
-from .task import Task
+from src.janet_twin.models.task import Task
 from .registry import PluginRegistry
 from src.janet_twin.logger import logger
 
