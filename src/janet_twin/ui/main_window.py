@@ -3,15 +3,29 @@ from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLa
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 from src.janet_twin.logger import logger
+# Import the SettingsUtility class
+from src.janet_twin.utils.settings_utility import SettingsUtility
 
 # Corrected import statement
 from .toolbox import ToolboxDock
 from .chat import ChatArea
 
+assistant_name = "JANET"
+username = "You"
+
 class GPTClientUI(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("PyQt Conversational GPT Client")
+
+        # Initialize and load settings
+        self.settings_utility = SettingsUtility()
+        self.settings_utility.load_settings()
+        self.settings = self.settings_utility.expose_settings()
+
+        assistant_name = self.settings.get("assistant-name", "JANET")
+        username = self.settings.get("username", "You")
+
+        self.setWindowTitle(assistant_name + " - GPT Client")
         self.setGeometry(100, 100, 1200, 800)
 
         # Toolbar
@@ -80,11 +94,11 @@ class GPTClientUI(QMainWindow):
             return
         self.chat_area.add_chat_bubble("You", text)
 
-        logger.info(f"User: {text}")
+        logger.info(f"{username}: {text}")
 
         self.input_line.clear()
         response = self.chat_area.mock_gpt_response(text)
 
-        logger.info(f"JANET: {response}")
+        logger.info(f"{assistant_name}: {response}")
 
-        self.chat_area.add_chat_bubble("JANET", response)
+        self.chat_area.add_chat_bubble(assistant_name, response)

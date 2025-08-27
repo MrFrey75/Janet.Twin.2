@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QLabel, QSizePolicy
 import random
+from src.janet_twin.utils.settings_utility import SettingsUtility
 
 class ChatArea:
     """Handles chat bubbles and mock GPT responses."""
