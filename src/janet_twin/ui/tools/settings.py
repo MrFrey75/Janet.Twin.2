@@ -3,6 +3,8 @@ import os
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton, QVBoxLayout, QApplication
 )
+from src.janet_twin.logger import logger
+
 
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.json")
 
@@ -70,9 +72,9 @@ class SettingsPanel(QWidget):
             try:
                 with open(SETTINGS_FILE, "r") as f:
                     self.settings.update(json.load(f))
-                    print("Settings loaded:", self.settings)
+                    logger.info("Settings loaded:", self.settings)
             except Exception as e:
-                print("Failed to load settings:", e)
+                logger.error("Failed to load settings:", e)
 
     def save_settings(self):
         """Save current settings to JSON file and apply theme live."""
@@ -84,9 +86,9 @@ class SettingsPanel(QWidget):
             os.makedirs(os.path.dirname(SETTINGS_FILE), exist_ok=True)
             with open(SETTINGS_FILE, "w") as f:
                 json.dump(self.settings, f, indent=4)
-            print(f"Settings Saved → {self.settings}")
+            logger.info(f"Settings Saved → {self.settings}")
         except Exception as e:
-            print("Failed to save settings:", e)
+            logger.error("Failed to save settings:", e)
 
         # Apply theme live
         if self.app:

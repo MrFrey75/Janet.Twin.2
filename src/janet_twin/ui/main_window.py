@@ -2,6 +2,7 @@
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QScrollArea, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
+from src.janet_twin.logger import logger
 
 # Corrected import statement
 from .toolbox import ToolboxDock
@@ -52,7 +53,7 @@ class GPTClientUI(QMainWindow):
         self.chat_scroll.setWidget(self.chat_container)
         self.main_layout.addWidget(self.chat_scroll)
 
-        # Input line + send button
+        # Input line and send button
         self.input_layout = QHBoxLayout()
         self.input_line = QLineEdit()
         self.input_line.setPlaceholderText("Type a message...")
@@ -78,6 +79,12 @@ class GPTClientUI(QMainWindow):
         if not text:
             return
         self.chat_area.add_chat_bubble("You", text)
+
+        logger.info(f"User: {text}")
+
         self.input_line.clear()
         response = self.chat_area.mock_gpt_response(text)
-        self.chat_area.add_chat_bubble("GPT", response)
+
+        logger.info(f"JANET: {response}")
+
+        self.chat_area.add_chat_bubble("JANET", response)

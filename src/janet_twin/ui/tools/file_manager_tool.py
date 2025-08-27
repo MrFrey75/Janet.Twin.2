@@ -13,6 +13,8 @@ from PyQt6.QtWidgets import (
     QFileDialog,
 )
 from PyQt6.QtCore import Qt
+from src.janet_twin.logger import logger
+
 
 UPLOAD_DIR = os.path.join("src", "janet_twin", "uploads")
 METADATA_FILE = os.path.join("data", "struct", "file.json")
@@ -97,4 +99,10 @@ class FileManagerTool(QWidget):
 
             # Display the original filename in the list
             self.file_list.addItem(original_name)
+
+            # check if file uploaded correctly
+            if os.path.exists(stored_path):
+                logger.info(f"File uploaded successfully: {stored_path}")
+            else:
+                logger.error(f"File upload failed: {stored_path}")
 
