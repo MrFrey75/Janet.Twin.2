@@ -38,7 +38,7 @@ class LogsSearch:
 
         # Search for lines containing the user's query.
         # This list comprehension is a concise way to filter the lines.
-        matching_lines = [line.strip() for line in lines if user_query.lower() in line.lower()]
+        matching_lines = "\n".join([line.strip() for line in lines if user_query.lower() in line.lower()])
 
         # Check if any matching lines were found.
         if matching_lines:

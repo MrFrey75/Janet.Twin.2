@@ -14,8 +14,8 @@ from .chat import ChatArea
 from src.janet_twin.orchestrator.orchestrator import Orchestrator
 from src.janet_twin.orchestrator.registry import PluginRegistry
 from src.janet_twin.models.task import Task
-from plugins.echo_plugin import EchoPlugin
-from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin, LogsSearch
+# Import the new function
+from src.janet_twin.utils.plugin_loader import register_plugins
 
 class InputTextEdit(QTextEdit):
     send_message = pyqtSignal()
@@ -49,10 +49,8 @@ class GPTClientUI(QMainWindow):
 
         self.plugin_registry = PluginRegistry()
         self.orchestrator = Orchestrator(self.plugin_registry)
-        self.plugin_registry.register("echo", EchoPlugin())
-        self.plugin_registry.register("search", GoogleSearchPlugin())
-        self.plugin_registry.register("conversation", ConversationPlugin())
-        self.plugin_registry.register("logsearch", LogsSearch())
+        # Call the new function to register all plugins
+        register_plugins(self.plugin_registry)
 
         self.toolbar = QToolBar("Main Toolbar")
         self.addToolBar(self.toolbar)
