@@ -20,7 +20,7 @@ class LogsSearch:
             str: A formatted string of the search results or an error message.
         """
 
-        self.log_file = "janettwin.log"
+        self.log_file = "event.log"
         self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
         self.log_path = os.path.join(self.log_dir, self.log_file)
 
@@ -118,4 +118,3 @@ class ConversationPlugin:
             return "I am an assistant designed to help with tasks like this. I am powered by a Python orchestrator and plugins."
         else:
             return "I'm sorry, I don't understand that. Please try asking about 'hello', 'how are you', or 'who are you'."
-

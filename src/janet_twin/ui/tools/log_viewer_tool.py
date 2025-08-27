@@ -1,4 +1,3 @@
-# log_viewer_tool.py
 import os, re
 from PyQt6.QtWidgets import QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton
 from PyQt6.QtCore import Qt, QTimer
@@ -23,7 +22,7 @@ class LogViewerTool(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.log_file = "janettwin.log"
+        self.log_file = "event.log"
         self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
 
         # Layout setup
@@ -62,7 +61,7 @@ class LogViewerTool(QWidget):
         """
 
 
-        self.log_file = "janettwin.log"
+        self.log_file = "event.log"
         self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
         self.log_path = os.path.join(self.log_dir, self.log_file)
 
@@ -107,4 +106,3 @@ class LogViewerTool(QWidget):
         # Scroll to the bottom to show the latest logs.
         # We move the cursor to the end and ensure the text edit follows it.
         self.log_display.moveCursor(QTextCursor.MoveOperation.End)
-
