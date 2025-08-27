@@ -86,3 +86,4 @@ Thumbs.db
 
 # Zip files (exclude this specific one)
 !/src/janet_twin.zip
+/src/janet_twin/uploads/

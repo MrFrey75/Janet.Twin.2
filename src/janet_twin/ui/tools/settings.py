@@ -1,23 +1,43 @@
 import json
 import os
-from PyQt6.QtWidgets import QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton, QApplication
+from PyQt6.QtWidgets import (
+    QWidget, QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton, QVBoxLayout, QApplication
+)
 
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.json")
 
-class SettingsPanel:
-    """Provides settings widgets to insert into a parent layout."""
 
-    def __init__(self, parent_layout, app: QApplication):
-        self.layout = parent_layout
+class SettingsPanel(QWidget):
+    """Settings panel as a QWidget that can be added to any layout."""
+
+    def __init__(self, parent=None, app: QApplication = None):
+        super().__init__(parent)
         self.app = app  # store QApplication reference for live theme changes
         self.settings = {
+            "assistant-name": "Janet",
             "username": "",
             "notifications": True,
-            "theme": "Light"
+            "theme": "Dark"
         }
+
+        # Layout for this panel
+        self.layout = QVBoxLayout(self)
+        self.setLayout(self.layout)
+
+        # Load settings from JSON
         self.load_settings()
 
+        # Add widgets
+        self.add_settings_widgets()
+
     def add_settings_widgets(self):
+        # Assistant Name
+        self.assistant_name_label = QLabel("Assistant Name:")
+        self.assistant_name_input = QLineEdit(self.settings.get("assistant-name", "Janet"))
+        self.layout.addWidget(self.assistant_name_label)
+        self.layout.addWidget(self.assistant_name_input)
+        self.settings["assistant-name"] = self.assistant_name_input.text()
+
         # Username
         self.username_label = QLabel("User Name:")
         self.username_input = QLineEdit(self.settings.get("username", ""))
@@ -61,6 +81,7 @@ class SettingsPanel:
         self.settings["theme"] = self.theme_combo.currentText()
 
         try:
+            os.makedirs(os.path.dirname(SETTINGS_FILE), exist_ok=True)
             with open(SETTINGS_FILE, "w") as f:
                 json.dump(self.settings, f, indent=4)
             print(f"Settings Saved → {self.settings}")
@@ -68,7 +89,8 @@ class SettingsPanel:
             print("Failed to save settings:", e)
 
         # Apply theme live
-        self.apply_theme(self.app)
+        if self.app:
+            self.apply_theme(self.app)
 
     def apply_theme(self, app: QApplication):
         """Apply the selected theme to the entire application."""

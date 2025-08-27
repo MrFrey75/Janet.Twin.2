@@ -7,6 +7,7 @@ from .tools.file_manager_tool import FileManagerTool
 from .tools.log_viewer_tool import LogViewerTool
 from .tools.raw_data_tool import RawDataTool
 
+
 class ToolboxDock:
     """Right-side dock for tools and settings."""
 
@@ -27,7 +28,7 @@ class ToolboxDock:
         # Store a single instance of SettingsPanel
         self.settings_panel = None
 
-    def show_toolbox(self, name):
+    def show_toolbox(self, name: str):
         self.toolbox_dock.setWindowTitle(name)
 
         # Clear previous widgets except the Settings panel instance
@@ -48,12 +49,10 @@ class ToolboxDock:
         if name == "Settings":
             app = QApplication.instance()
             if self.settings_panel is None:
-                # Create the panel once and reuse it
-                self.settings_panel = SettingsPanel(self.toolbox_layout, app)
-                self.settings_panel.add_settings_widgets()
-            else:
-                # Re-add existing panel to layout
-                self.toolbox_layout.addWidget(self.settings_panel)
+                # Instantiate SettingsPanel once with the app reference
+                self.settings_panel = SettingsPanel(parent=None, app=app)
+            # Add the panel to the layout (reusing the instance)
+            self.toolbox_layout.addWidget(self.settings_panel)
         elif name in tool_map:
             self.toolbox_layout.addWidget(tool_map[name])
 
