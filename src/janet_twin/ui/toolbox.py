@@ -1,9 +1,7 @@
 # File: toolbox.py
-import yaml
 
 from PyQt6.QtWidgets import QDockWidget, QStackedWidget, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
-from src.janet_twin.logger import logger
 from .tools.conversation_history_tool import ConversationHistoryTool
 from .tools.log_viewer_tool import LogViewerTool
 from .tools.file_manager_tool import FileManagerTool

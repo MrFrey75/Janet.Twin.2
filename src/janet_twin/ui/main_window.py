@@ -1,14 +1,11 @@
 # File: main_window.py
-import os
-import yaml
 from datetime import datetime
-from uuid import uuid4
 
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, \
     QScrollArea, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 from src.janet_twin.utils.settings_utility import SettingsUtility
 from src.janet_twin.utils.conversation_utility import ConversationUtility
 from src.janet_twin.models.conversation import Conversation
@@ -18,7 +15,7 @@ from src.janet_twin.orchestrator.orchestrator import Orchestrator
 from src.janet_twin.orchestrator.registry import PluginRegistry
 from src.janet_twin.models.task import Task
 from plugins.echo_plugin import EchoPlugin
-from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin
+from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin, LogsSearch
 
 class GPTClientUI(QMainWindow):
     def __init__(self):
@@ -42,6 +39,7 @@ class GPTClientUI(QMainWindow):
         self.plugin_registry.register("echo", EchoPlugin())
         self.plugin_registry.register("search", GoogleSearchPlugin())
         self.plugin_registry.register("conversation", ConversationPlugin())
+        self.plugin_registry.register("logsearch", LogsSearch())
 
         self.toolbar = QToolBar("Main Toolbar")
         self.addToolBar(self.toolbar)
@@ -110,7 +108,7 @@ class GPTClientUI(QMainWindow):
             self.save_current_conversation()
 
         self.current_conversation = Conversation()
-        logger.info(f"New conversation started with UUID: {self.current_conversation.unique_id}")
+        logger.debug(f"New conversation started with UUID: {self.current_conversation.unique_id}")
 
         self.chat_area.clear_chat()
         self.setWindowTitle("New Chat - GPT Client")
@@ -128,7 +126,7 @@ class GPTClientUI(QMainWindow):
 
             self.conversation_utility.save_conversation(str(self.current_conversation.unique_id),
                                                         self.current_conversation.to_dict())
-            logger.info(f"Conversation '{self.current_conversation.title}' saved to registry.")
+            logger.debug(f"Conversation '{self.current_conversation.title}' saved to registry.")
 
     def load_conversation_by_id(self, unique_id: str):
         """
@@ -167,7 +165,7 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area.add_chat_bubble(self.username, text)
         self.current_conversation.messages.append({"role": "user", "text": text})
-        logger.info(f"{self.username}: {text}")
+        logger.debug(f"{self.username}: {text}")
         self.input_line.clear()
 
         self.save_current_conversation()
@@ -191,6 +189,6 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area.add_chat_bubble(self.assistant_name, response)
         self.current_conversation.messages.append({"role": "assistant", "text": response})
-        logger.info(f"{self.assistant_name}: {response}")
+        logger.debug(f"{self.assistant_name}: {response}")
 
         self.save_current_conversation()

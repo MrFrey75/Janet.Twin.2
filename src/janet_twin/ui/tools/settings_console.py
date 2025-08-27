@@ -3,7 +3,7 @@ import yaml
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton, QVBoxLayout, QApplication
 )
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.yaml")
 

@@ -1,11 +1,9 @@
 # File: conversation_history_tool.py
 import os
-import yaml
 from PyQt6.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget, QListWidgetItem, QPushButton
 from PyQt6.QtCore import Qt, pyqtSignal, QFileSystemWatcher
 
-from src.janet_twin.logger import logger
-from src.janet_twin.utils.settings_utility import SettingsUtility
+from src.janet_twin.utils.logger_utility import logger
 from src.janet_twin.utils.conversation_utility import ConversationUtility
 
 # Define the conversation path as it's used to list all files
@@ -72,7 +70,7 @@ class ConversationHistoryTool(QWidget):
         """
         unique_id = item.data(Qt.ItemDataRole.UserRole)
         if unique_id:
-            logger.info(f"Conversation with UUID {unique_id} selected from history.")
+            logger.debug(f"Conversation with UUID {unique_id} selected from history.")
             self.conversation_selected.emit(unique_id)
 
     def refresh_history(self):

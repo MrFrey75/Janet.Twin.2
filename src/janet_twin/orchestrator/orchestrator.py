@@ -1,6 +1,6 @@
 from src.janet_twin.models.task import Task
 from .registry import PluginRegistry
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 
 
 class Orchestrator:
@@ -17,7 +17,7 @@ class Orchestrator:
 
         try:
             result = plugin.execute(task.payload or {})
-            logger.info(f"Task {task.command} executed successfully")
+            logger.debug(f"Task {task.command} executed successfully")
             return result
         except Exception as e:
             logger.error(f"Plugin {task.command} failed: {e}")

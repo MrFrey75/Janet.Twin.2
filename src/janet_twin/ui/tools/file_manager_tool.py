@@ -13,7 +13,7 @@ from PyQt6.QtWidgets import (
     QFileDialog,
 )
 from PyQt6.QtCore import Qt
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 
 
 UPLOAD_DIR = os.path.join("src", "janet_twin", "uploads")

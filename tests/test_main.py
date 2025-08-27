@@ -1,10 +1,9 @@
 import pytest
-from PyQt6.QtWidgets import QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QWidget
 from src.janet_twin.ui.main_window import GPTClientUI
 from src.janet_twin.ui.tools.settings_console import SettingsPanel
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 import logging
-import os
 
 
 @pytest.fixture

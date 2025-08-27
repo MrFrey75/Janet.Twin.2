@@ -3,8 +3,7 @@ import json
 import os
 from PyQt6.QtWidgets import QApplication
 from src.janet_twin.ui.main_window import GPTClientUI
-from src.janet_twin.logger import logger
-import logging
+from src.janet_twin.utils.logger_utility import logger
 
 # Updated path
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.json")
@@ -21,7 +20,7 @@ def load_settings():
             with open(SETTINGS_FILE, "r") as f:
                 data = json.load(f)
                 default_settings.update(data)
-                logger.info("Settings loaded:", default_settings)
+                logger.debug("Settings loaded:", default_settings)
         except Exception as e:
             logger.error("Failed to load settings:", e)
     return default_settings

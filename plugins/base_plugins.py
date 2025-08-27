@@ -1,5 +1,51 @@
+import os
 from typing import Dict, Any
 import requests
+
+
+class LogsSearch:
+    """
+    A plugin for searching logs.
+    """
+
+    def execute(self, payload: Dict[str, Any]) -> str:
+        """
+        Executes the log search based on the user's query.
+
+        Args:
+            payload (Dict[str, Any]): A dictionary containing the user's
+                                      search query under the key "text".
+
+        Returns:
+            str: A formatted string of the search results or an error message.
+        """
+
+        self.log_file = "janettwin.log"
+        self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+        self.log_path = os.path.join(self.log_dir, self.log_file)
+
+        user_query = payload.get("text", "")
+        if not user_query:
+            return "No search query provided."
+
+        if not os.path.exists(self.log_path):
+            return f"Error: No log file found at {self.log_path}"
+
+        # Read all lines from the log file.
+        with open(self.log_path, "r") as f:
+            lines = f.readlines()
+
+        # Search for lines containing the user's query.
+        # This list comprehension is a concise way to filter the lines.
+        matching_lines = [line.strip() for line in lines if user_query.lower() in line.lower()]
+
+        # Check if any matching lines were found.
+        if matching_lines:
+            # Join the matching lines into a single string with newlines.
+            return "\n".join(matching_lines)
+        else:
+            return f"No logs found containing '{user_query}'."
+
 
 class GoogleSearchPlugin:
     """

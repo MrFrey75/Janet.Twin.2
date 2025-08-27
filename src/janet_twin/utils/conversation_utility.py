@@ -1,6 +1,6 @@
 import os
 import yaml
-from src.janet_twin.logger import logger
+from src.janet_twin.utils.logger_utility import logger
 
 CONVERSATION_PATH = os.path.join("data", "conversations")
 
