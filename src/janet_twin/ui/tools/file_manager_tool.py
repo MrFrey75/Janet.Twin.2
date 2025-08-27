@@ -1,8 +1,8 @@
 # file_manager_tool.py
 import os
-import json
 import shutil
 import uuid
+import yaml
 from datetime import datetime
 from PyQt6.QtWidgets import (
     QLabel,
@@ -17,7 +17,7 @@ from src.janet_twin.logger import logger
 
 
 UPLOAD_DIR = os.path.join("src", "janet_twin", "uploads")
-METADATA_FILE = os.path.join("data", "struct", "file.json")
+METADATA_FILE = os.path.join("data", "struct", "file.yaml")
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -26,7 +26,7 @@ os.makedirs(os.path.dirname(METADATA_FILE), exist_ok=True)
 # Ensure metadata file exists
 if not os.path.exists(METADATA_FILE):
     with open(METADATA_FILE, "w") as f:
-        json.dump([], f, indent=4)
+        yaml.safe_dump([], f)
 
 
 class FileManagerTool(QWidget):
@@ -56,11 +56,13 @@ class FileManagerTool(QWidget):
         """Populate the list from metadata file."""
         try:
             with open(METADATA_FILE, "r") as f:
-                files = json.load(f)
+                files = yaml.safe_load(f) or []
+            if isinstance(files, dict):
+                files = list(files.values())
             for file_entry in files:
                 self.file_list.addItem(file_entry.get("original_name", "Unknown"))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Error loading metadata: {e}")
 
     def upload_file(self):
         """Open a file dialog, copy selected files to UPLOAD_DIR, and save metadata."""
@@ -71,8 +73,7 @@ class FileManagerTool(QWidget):
         # Load metadata safely
         try:
             with open(METADATA_FILE, "r") as f:
-                metadata = json.load(f)
-            # Convert dict to list if needed
+                metadata = yaml.safe_load(f) or []
             if isinstance(metadata, dict):
                 metadata = list(metadata.values())
             elif not isinstance(metadata, list):
@@ -106,3 +107,9 @@ class FileManagerTool(QWidget):
             else:
                 logger.error(f"File upload failed: {stored_path}")
 
+        # Save updated metadata back to YAML
+        try:
+            with open(METADATA_FILE, "w") as f:
+                yaml.safe_dump(metadata, f, default_flow_style=False)
+        except Exception as e:
+            logger.error(f"Error saving metadata: {e}")

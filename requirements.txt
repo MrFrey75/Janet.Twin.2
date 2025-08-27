@@ -1,3 +1,4 @@
+pyyaml
 pyqt6-sip
 # Core
 pyqt6==6.7.0

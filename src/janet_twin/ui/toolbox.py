@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QDockWidget, QWidget, QVBoxLayout, QApplication
 from PyQt6.QtCore import Qt
 
-from .tools.settings import SettingsPanel
+from .tools.settings_console import SettingsPanel
 from .tools.conversation_history_tool import ConversationHistoryTool
 from .tools.file_manager_tool import FileManagerTool
 from .tools.log_viewer_tool import LogViewerTool

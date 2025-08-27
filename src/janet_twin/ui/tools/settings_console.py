@@ -1,12 +1,12 @@
-import json
 import os
+import yaml
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QCheckBox, QComboBox, QPushButton, QVBoxLayout, QApplication
 )
 from src.janet_twin.logger import logger
 
 
-SETTINGS_FILE = os.path.join("data", "struct", "user_config.json")
+SETTINGS_FILE = os.path.join("data", "struct", "user_config.yaml")
 
 
 class SettingsPanel(QWidget):
@@ -26,7 +26,7 @@ class SettingsPanel(QWidget):
         self.layout = QVBoxLayout(self)
         self.setLayout(self.layout)
 
-        # Load settings from JSON
+        # Load settings from YAML
         self.load_settings()
 
         # Add widgets
@@ -67,17 +67,20 @@ class SettingsPanel(QWidget):
         self.layout.addWidget(self.save_button)
 
     def load_settings(self):
-        """Load settings from JSON file if it exists."""
+        """Load settings from YAML file if it exists."""
         if os.path.exists(SETTINGS_FILE):
             try:
                 with open(SETTINGS_FILE, "r") as f:
-                    self.settings.update(json.load(f))
-                    logger.info("Settings loaded:", self.settings)
+                    loaded = yaml.safe_load(f)
+                    if isinstance(loaded, dict):
+                        self.settings.update(loaded)
+                logger.info("Settings loaded:", self.settings)
             except Exception as e:
                 logger.error("Failed to load settings:", e)
 
     def save_settings(self):
-        """Save current settings to JSON file and apply theme live."""
+        """Save current settings to YAML file and apply theme live."""
+        self.settings["assistant-name"] = self.assistant_name_input.text()
         self.settings["username"] = self.username_input.text()
         self.settings["notifications"] = self.notifications_checkbox.isChecked()
         self.settings["theme"] = self.theme_combo.currentText()
@@ -85,7 +88,7 @@ class SettingsPanel(QWidget):
         try:
             os.makedirs(os.path.dirname(SETTINGS_FILE), exist_ok=True)
             with open(SETTINGS_FILE, "w") as f:
-                json.dump(self.settings, f, indent=4)
+                yaml.safe_dump(self.settings, f, default_flow_style=False)
             logger.info(f"Settings Saved → {self.settings}")
         except Exception as e:
             logger.error("Failed to save settings:", e)

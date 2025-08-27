@@ -1,7 +1,7 @@
 import pytest
 from PyQt6.QtWidgets import QVBoxLayout, QWidget
 from src.janet_twin.ui.main_window import GPTClientUI
-from src.janet_twin.ui.tools.settings import SettingsPanel
+from src.janet_twin.ui.tools.settings_console import SettingsPanel
 from src.janet_twin.logger import logger
 import logging
 import os
