@@ -1,3 +1,5 @@
+#
+
 import os, re
 from PyQt6.QtWidgets import QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton
 from PyQt6.QtCore import Qt, QTimer
@@ -19,17 +21,19 @@ class LogViewerTool(QWidget):
         "MESSAGE": QColor("yellow"),
     }
 
+
+
     def __init__(self):
         super().__init__()
 
-        self.log_file = "event.log"
         self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+        self.log_file_path = os.path.join(self.log_dir, 'event.log')
 
         # Layout setup
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        log_label = QLabel(f"Log File: {self.log_file}")
+        log_label = QLabel(f"Log File: {self.log_file_path}")
         layout.addWidget(log_label)
 
         # Optional: manual refresh button
@@ -60,16 +64,14 @@ class LogViewerTool(QWidget):
         to apply formatting (colors) to each line before inserting it.
         """
 
-
-        self.log_file = "event.log"
         self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
-        self.log_path = os.path.join(self.log_dir, self.log_file)
+        self.log_file_path = os.path.join(self.log_dir, 'event.log')
 
-        if not os.path.exists(self.log_path):
-            self.log_display.setPlaceholderText(f"No log found at {self.log_path}")
+        if not os.path.exists(self.log_file_path):
+            self.log_display.setPlaceholderText(f"No log found at {self.log_file_path}")
             return
 
-        with open(self.log_path, "r") as f:
+        with open(self.log_file_path, "r") as f:
             lines = f.readlines()
 
         doc = self.log_display.document()
