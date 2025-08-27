@@ -94,6 +94,7 @@ class GPTClientUI(QMainWindow):
         self.start_new_conversation()
 
         self.toolbox = ToolboxDock(self)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.toolbox)
         for action in self.tool_actions:
             action.triggered.connect(lambda checked, a=action: self.toolbox.show_toolbox(a.text()))
         self.settings_action.triggered.connect(lambda: self.toolbox.show_toolbox("Settings"))

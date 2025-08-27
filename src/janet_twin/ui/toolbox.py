@@ -1,6 +1,6 @@
 import yaml
 
-from PyQt6.QtWidgets import QDockWidget, QTabWidget, QWidget, QVBoxLayout
+from PyQt6.QtWidgets import QDockWidget, QStackedWidget, QWidget, QVBoxLayout
 from PyQt6.QtCore import Qt
 from src.janet_twin.logger import logger
 from .tools.conversation_history_tool import ConversationHistoryTool
@@ -20,6 +20,10 @@ class ToolboxDock(QDockWidget):
         self.setAllowedAreas(Qt.DockWidgetArea.RightDockWidgetArea | Qt.DockWidgetArea.LeftDockWidgetArea)
         self.parent = parent
 
+        # Set a reasonable fixed width for the toolbox
+        self.setMinimumWidth(300)
+        self.setMaximumWidth(450)
+
         self.tools = {
             "Conversation History": ConversationHistoryTool(),
             "File Manager": FileManagerTool(),
@@ -28,26 +32,30 @@ class ToolboxDock(QDockWidget):
             "Settings": SettingsPanel(self.parent)
         }
 
-        self.tab_widget = QTabWidget()
+        self.stacked_widget = QStackedWidget()
+        self.tool_map = {}
+
         for name, tool in self.tools.items():
-            self.tab_widget.addTab(tool, name)
+            self.tool_map[name] = self.stacked_widget.addWidget(tool)
 
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
-        layout.addWidget(self.tab_widget)
+        layout.addWidget(self.stacked_widget)
         self.setWidget(main_widget)
+
+        # Initially hide the dock widget
         self.hide()
 
     def show_toolbox(self, tool_name):
         """
-        Shows the toolbox with a specific tab selected.
+        Shows the toolbox with a specific tool selected and toggles visibility.
         """
-        if tool_name in self.tools:
-            index = self.tab_widget.indexOf(self.tools[tool_name])
-            if index != -1:
-                self.tab_widget.setCurrentIndex(index)
-                if self.isVisible():
-                    self.hide()
-                else:
-                    self.show()
+        if tool_name in self.tool_map:
+            # Set the current widget in the stacked widget
+            self.stacked_widget.setCurrentIndex(self.tool_map[tool_name])
 
+            # Toggle the visibility of the entire dock widget
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show()
