@@ -16,7 +16,7 @@ from src.janet_twin.orchestrator.registry import PluginRegistry
 from src.janet_twin.orchestrator.task import Task
 # Import the new plugins
 from plugins.echo_plugin import EchoPlugin
-from plugins.conversation_plugin import ConversationPlugin
+from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin
 
 assistant_name = "JANET"
 username = "You"
@@ -43,6 +43,7 @@ class GPTClientUI(QMainWindow):
 
         # Register the new plugins
         self.plugin_registry.register("echo", EchoPlugin())
+        self.plugin_registry.register("search", GoogleSearchPlugin())
         self.plugin_registry.register("conversation", ConversationPlugin())
 
         # Toolbar
