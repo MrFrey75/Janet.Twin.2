@@ -1,11 +1,10 @@
 #
 
 import os, re
-from PyQt6.QtWidgets import QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton
+from PyQt6.QtWidgets import QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton, QComboBox
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor
-from src.janet_twin.utils.logger_utility import logger
-
+from src.janet_twin.utils.logger_utility import logger, log_message
 
 class LogViewerTool(QWidget):
     REFRESH_INTERVAL_MS = 2000  # Refresh every 2 seconds
@@ -18,15 +17,15 @@ class LogViewerTool(QWidget):
         "WARNING": QColor("orange"),
         "ERROR": QColor("red"),
         "CRITICAL": QColor("purple"),
-        "MESSAGE": QColor("yellow"),
+        "MESSAGE": QColor("green"),
     }
-
-
 
     def __init__(self):
         super().__init__()
 
-        self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
+        # Use consistent log path - same as logger_utility.py
+        PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+        self.log_dir = os.path.join(PROJECT_ROOT, 'logs')
         self.log_file_path = os.path.join(self.log_dir, 'event.log')
 
         # Layout setup
@@ -40,6 +39,19 @@ class LogViewerTool(QWidget):
         self.refresh_button = QPushButton("Refresh")
         self.refresh_button.clicked.connect(self.load_log)
         layout.addWidget(self.refresh_button)
+
+        # Add filter for log severity
+        self.filter_label = QLabel("Filter by Severity:")
+        layout.addWidget(self.filter_label)
+        self.filter_combo = QComboBox()
+        self.filter_combo.addItems(["ALL","MESSAGE","DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+        self.filter_combo.setCurrentText("ALL")
+        layout.addWidget(self.filter_combo)
+
+        # Connect the QComboBox to the load_log method
+        self.filter_combo.currentIndexChanged.connect(self.load_log)
+
+        layout.addWidget(self.filter_combo)
 
         # Log display widget
         self.log_display = QTextEdit()
@@ -57,15 +69,15 @@ class LogViewerTool(QWidget):
     def return_severity_color(self, severity):
         return self.LOG_COLORS.get(severity)
 
-    def load_log(self):
+    def load_log(self, severity=None):
         """
         Load log contents into the QTextEdit and apply color coding.
         This method now reads the file line by line and uses a QTextCursor
         to apply formatting (colors) to each line before inserting it.
         """
 
-        self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
-        self.log_file_path = os.path.join(self.log_dir, 'event.log')
+        severity_filter = self.filter_combo.currentText()
+
 
         if not os.path.exists(self.log_file_path):
             self.log_display.setPlaceholderText(f"No log found at {self.log_file_path}")
@@ -97,8 +109,11 @@ class LogViewerTool(QWidget):
 
                 format.setForeground(color)
 
+                if severity_filter != "ALL" and severity != severity_filter:
+                    continue
+
                 # Insert the line with the determined format.
-                cursor.insertText(f"{date} - {message}", format)
+                cursor.insertText(f"{date} - {message}\n\n", format)
 
             except IndexError:
                 logger.warning(f"Error processing line: '{severity} - {date} - {message}'. It may not have the expected format.")

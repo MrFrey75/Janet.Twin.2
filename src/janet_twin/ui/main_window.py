@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLa
     QScrollArea, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
-from src.janet_twin.utils.logger_utility import logger
+from src.janet_twin.utils.logger_utility import logger, log_message
 from src.janet_twin.utils.settings_utility import SettingsUtility
 from src.janet_twin.utils.conversation_utility import ConversationUtility
 from src.janet_twin.models.conversation import Conversation
@@ -165,7 +165,7 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area.add_chat_bubble(self.username, text)
         self.current_conversation.messages.append({"role": "user", "text": text})
-        logger.debug(f"{self.username}: {text}")
+        log_message(f"{self.username}: {text}")
         self.input_line.clear()
 
         self.save_current_conversation()
@@ -189,6 +189,6 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area.add_chat_bubble(self.assistant_name, response)
         self.current_conversation.messages.append({"role": "assistant", "text": response})
-        logger.debug(f"{self.assistant_name}: {response}")
+        log_message(f"{self.assistant_name}: {response}")
 
         self.save_current_conversation()

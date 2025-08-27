@@ -19,9 +19,10 @@ class LogsSearch:
         Returns:
             str: A formatted string of the search results or an error message.
         """
-
+        # Use consistent log path - same as logger_utility.py
+        PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.log_dir = os.path.join(PROJECT_ROOT, 'logs')
         self.log_file = "event.log"
-        self.log_dir = os.path.join(os.path.dirname(__file__), 'logs')
         self.log_path = os.path.join(self.log_dir, self.log_file)
 
         user_query = payload.get("text", "")
