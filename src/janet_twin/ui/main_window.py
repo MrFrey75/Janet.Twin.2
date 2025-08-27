@@ -2,9 +2,9 @@
 from datetime import datetime
 
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, \
-    QScrollArea, QSizePolicy
+    QScrollArea, QSizePolicy, QTextEdit
 from PyQt6.QtGui import QAction, QIcon
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from src.janet_twin.utils.logger_utility import logger, log_message
 from src.janet_twin.utils.settings_utility import SettingsUtility
 from src.janet_twin.utils.conversation_utility import ConversationUtility
@@ -16,6 +16,19 @@ from src.janet_twin.orchestrator.registry import PluginRegistry
 from src.janet_twin.models.task import Task
 from plugins.echo_plugin import EchoPlugin
 from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin, LogsSearch
+
+class InputTextEdit(QTextEdit):
+    send_message = pyqtSignal()
+
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            # Check for Shift + Enter for a new line
+            if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
+                super().keyPressEvent(event)
+            else:
+                self.send_message.emit()
+        else:
+            super().keyPressEvent(event)
 
 class GPTClientUI(QMainWindow):
     def __init__(self):
@@ -77,9 +90,18 @@ class GPTClientUI(QMainWindow):
         self.main_layout.addWidget(self.chat_scroll)
 
         self.input_layout = QHBoxLayout()
-        self.input_line = QLineEdit()
+        # FIX: Replaced QLineEdit with InputTextEdit
+        self.input_line = InputTextEdit()
         self.input_line.setPlaceholderText("Type a message...")
+        self.input_line.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        self.input_line.setMaximumHeight(80)
+
+        # send button
         self.send_button = QPushButton("Send")
+        self.send_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        self.send_button.setMaximumHeight(80)
+        self.send_button.setStyleSheet("background-color: lightblue;")
+
         self.input_layout.addWidget(self.input_line)
         self.input_layout.addWidget(self.send_button)
         self.main_layout.addLayout(self.input_layout)
@@ -88,6 +110,9 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area = ChatArea(self.chat_layout, self.chat_scroll)
         self.send_button.clicked.connect(self.send_message)
+
+        # FIX: This connection now works because self.input_line is an InputTextEdit
+        self.input_line.send_message.connect(self.send_message)
 
         self.start_new_conversation()
 
@@ -159,7 +184,8 @@ class GPTClientUI(QMainWindow):
 
 
     def send_message(self):
-        text = self.input_line.text().strip()
+        # FIX: Get the text from the QTextEdit instead of QLineEdit
+        text = self.input_line.toPlainText().strip()
         if not text:
             return
 
