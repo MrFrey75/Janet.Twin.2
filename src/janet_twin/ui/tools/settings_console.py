@@ -5,9 +5,7 @@ from PyQt6.QtWidgets import (
 )
 from src.janet_twin.logger import logger
 
-
 SETTINGS_FILE = os.path.join("data", "struct", "user_config.yaml")
-
 
 class SettingsPanel(QWidget):
     """Settings panel as a QWidget that can be added to any layout."""
