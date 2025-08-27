@@ -36,7 +36,7 @@ The goal is a small, reliable core that can grow new skills without turning into
 ### Setup & Run
 ```bash
 # clone the repository
-git clone https://github.com/MrFrey75/Janet.Twin.git
+git clone https://github.com/MrFrey75/Janet.Twin.2.git
 cd Janet.Twin
 
 # create virtual environment (recommended)

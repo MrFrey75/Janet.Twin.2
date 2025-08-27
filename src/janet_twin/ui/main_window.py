@@ -1,14 +1,22 @@
 # main_window.py
+from http.client import responses
+
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QScrollArea, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt
 from src.janet_twin.logger import logger
 # Import the SettingsUtility class
 from src.janet_twin.utils.settings_utility import SettingsUtility
-
 # Corrected import statement
 from .toolbox import ToolboxDock
 from .chat import ChatArea
+# Import the orchestrator and related classes
+from src.janet_twin.orchestrator.orchestrator import Orchestrator
+from src.janet_twin.orchestrator.registry import PluginRegistry
+from src.janet_twin.orchestrator.task import Task
+# Import the new plugins
+from plugins.echo_plugin import EchoPlugin
+from plugins.conversation_plugin import ConversationPlugin
 
 assistant_name = "JANET"
 username = "You"
@@ -22,11 +30,20 @@ class GPTClientUI(QMainWindow):
         self.settings_utility.load_settings()
         self.settings = self.settings_utility.expose_settings()
 
+        # Moved these assignments to after the settings are loaded
         assistant_name = self.settings.get("assistant-name", "JANET")
         username = self.settings.get("username", "You")
 
         self.setWindowTitle(assistant_name + " - GPT Client")
         self.setGeometry(100, 100, 1200, 800)
+
+        # Initialize the registry and orchestrator
+        self.plugin_registry = PluginRegistry()
+        self.orchestrator = Orchestrator(self.plugin_registry)
+
+        # Register the new plugins
+        self.plugin_registry.register("echo", EchoPlugin())
+        self.plugin_registry.register("conversation", ConversationPlugin())
 
         # Toolbar
         self.toolbar = QToolBar("Main Toolbar")
@@ -92,13 +109,32 @@ class GPTClientUI(QMainWindow):
         text = self.input_line.text().strip()
         if not text:
             return
+
         self.chat_area.add_chat_bubble("You", text)
-
         logger.info(f"{username}: {text}")
-
         self.input_line.clear()
-        response = self.chat_area.mock_gpt_response(text)
+
+        command = None
+        payload_text = text
+
+        # Check for a command in the input, e.g., "echo: Hello"
+        if ":" in text:
+            parts = text.split(":", 1)
+            command = parts[0].strip().lower()
+            payload_text = parts[1].strip()
+
+        # Check if a plugin exists for the command, otherwise default to "conversation"
+        if not command or not self.plugin_registry.get(command):
+            command = "conversation"
+            # In this case, the full text is the payload, not just the part after ":"
+            payload_text = text
+
+        # Prepare the task for the orchestrator
+        payload = {"text": payload_text}
+        task = Task(user=username, command=command, payload=payload)
+
+        # Handle the task with the orchestrator
+        response = self.orchestrator.handle(task)
 
         logger.info(f"{assistant_name}: {response}")
-
         self.chat_area.add_chat_bubble(assistant_name, response)
