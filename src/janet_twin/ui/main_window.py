@@ -62,6 +62,7 @@ class GPTClientUI(QMainWindow):
         self.new_chat_action.triggered.connect(self.start_new_conversation)
 
         tool_names = ["Conversation History", "File Manager", "Log Viewer", "Raw Data"]
+        tool_names = ["Conversation History", "File Manager", "Log Viewer"]
         self.tool_actions = []
         for name in tool_names:
             action = QAction(name, self)
@@ -123,6 +124,8 @@ class GPTClientUI(QMainWindow):
         # Connect the conversation_selected signal from the toolbox to the new handler
         self.toolbox.get_tool("Conversation History").conversation_selected.connect(self.load_conversation_by_id)
 
+        self.input_line.setFocus()
+
     def start_new_conversation(self):
         """
         Saves the current conversation and initializes a new one.
@@ -135,6 +138,8 @@ class GPTClientUI(QMainWindow):
 
         self.chat_area.clear_chat()
         self.setWindowTitle("New Chat - GPT Client")
+
+        self.input_line.setFocus()
 
     def save_current_conversation(self):
         """

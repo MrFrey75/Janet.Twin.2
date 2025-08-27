@@ -29,13 +29,3 @@ class ChatArea:
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
-
-    def mock_gpt_response(self, user_text):
-        responses = [
-            "Interesting! Can you tell me more?",
-            "I see, go on...",
-            "That's a great point!",
-            "Hmm, let's think about that.",
-            "Can you clarify what you mean?"
-        ]
-        return random.choice(responses)

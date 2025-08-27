@@ -27,7 +27,7 @@ class ToolboxDock(QDockWidget):
             "Conversation History": ConversationHistoryTool(),
             "File Manager": FileManagerTool(),
             "Log Viewer": LogViewerTool(),
-            "Raw Data": RawDataTool(),
+            # "Raw Data": RawDataTool(),
             "Settings": SettingsPanel(self.parent)
         }
 
