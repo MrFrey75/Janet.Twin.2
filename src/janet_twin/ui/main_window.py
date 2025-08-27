@@ -1,3 +1,4 @@
+# File: main_window.py
 import os
 import yaml
 from datetime import datetime
@@ -18,7 +19,6 @@ from src.janet_twin.orchestrator.registry import PluginRegistry
 from src.janet_twin.models.task import Task
 from plugins.echo_plugin import EchoPlugin
 from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin
-
 
 class GPTClientUI(QMainWindow):
     def __init__(self):
@@ -99,6 +99,9 @@ class GPTClientUI(QMainWindow):
             action.triggered.connect(lambda checked, a=action: self.toolbox.show_toolbox(a.text()))
         self.settings_action.triggered.connect(lambda: self.toolbox.show_toolbox("Settings"))
 
+        # Connect the conversation_selected signal from the toolbox to the new handler
+        self.toolbox.get_tool("Conversation History").conversation_selected.connect(self.load_conversation_by_id)
+
     def start_new_conversation(self):
         """
         Saves the current conversation and initializes a new one.
@@ -121,11 +124,41 @@ class GPTClientUI(QMainWindow):
 
             if not self.current_conversation.title and self.current_conversation.messages:
                 first_message_text = self.current_conversation.messages[0].get("text", "Untitled")
-                self.current_conversation.title = f"Conversation starting with '{first_message_text[:30]}...'"
+                self.current_conversation.title = f"'{first_message_text[:30]}...'"
 
             self.conversation_utility.save_conversation(str(self.current_conversation.unique_id),
                                                         self.current_conversation.to_dict())
             logger.info(f"Conversation '{self.current_conversation.title}' saved to registry.")
+
+    def load_conversation_by_id(self, unique_id: str):
+        """
+        Loads a conversation by its unique ID and displays it in the chat window.
+        """
+        # Save the current conversation before switching
+        self.save_current_conversation()
+
+        conversation_data = self.conversation_utility.load_conversation(unique_id)
+        if conversation_data:
+            # Re-initialize the Conversation object from the loaded data
+            self.current_conversation = Conversation(
+                unique_id=unique_id,
+                created_at=datetime.fromisoformat(conversation_data.get("created_at")),
+                last_updated=datetime.fromisoformat(conversation_data.get("last_updated")),
+                filename=conversation_data.get("filename", ""),
+                title=conversation_data.get("title", "Untitled"),
+                messages=conversation_data.get("messages", [])
+            )
+            logger.info(f"Loaded conversation with UUID: {self.current_conversation.unique_id}")
+            self.setWindowTitle(f"{self.current_conversation.title} - GPT Client")
+
+            # Clear the existing chat and populate with the loaded messages
+            self.chat_area.clear_chat()
+            for message in self.current_conversation.messages:
+                sender = self.username if message["role"] == "user" else self.assistant_name
+                self.chat_area.add_chat_bubble(sender, message["text"])
+        else:
+            logger.warning(f"Could not load conversation with unique ID: {unique_id}")
+
 
     def send_message(self):
         text = self.input_line.text().strip()

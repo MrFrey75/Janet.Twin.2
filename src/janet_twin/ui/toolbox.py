@@ -1,3 +1,4 @@
+# File: toolbox.py
 import yaml
 
 from PyQt6.QtWidgets import QDockWidget, QStackedWidget, QWidget, QVBoxLayout
@@ -59,3 +60,9 @@ class ToolboxDock(QDockWidget):
                 self.hide()
             else:
                 self.show()
+
+    def get_tool(self, tool_name):
+        """
+        Returns a specific tool widget instance.
+        """
+        return self.tools.get(tool_name)

@@ -1,7 +1,8 @@
+# File: conversation_history_tool.py
 import os
 import yaml
-from PyQt6.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QLabel, QListWidget, QVBoxLayout, QWidget, QListWidgetItem, QPushButton
+from PyQt6.QtCore import Qt, pyqtSignal, QFileSystemWatcher
 
 from src.janet_twin.logger import logger
 from src.janet_twin.utils.settings_utility import SettingsUtility
@@ -12,47 +13,71 @@ CONVERSATION_PATH = os.path.join("data", "conversations")
 
 
 class ConversationHistoryTool(QWidget):
+    # Define a new signal that will emit the unique ID of the conversation
+    conversation_selected = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
+        self.conv_utility = ConversationUtility()
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         label = QLabel("Conversation History")
         layout.addWidget(label)
 
-        history_list = QListWidget()
-        self.load_history(history_list)
-        layout.addWidget(history_list)
+        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.clicked.connect(self.refresh_history)
+        layout.addWidget(self.refresh_button)
 
-    def load_history(self, history_list):
+        self.history_list = QListWidget()
+        self.load_history()
+        layout.addWidget(self.history_list)
+
+
+
+        # Connect the list widget's itemClicked signal to a handler
+        self.history_list.itemClicked.connect(self.on_item_clicked)
+
+        watcher = QFileSystemWatcher()
+        watcher.addPath(CONVERSATION_PATH)
+        watcher.directoryChanged.connect(self.refresh_history)
+
+    def load_history(self):
         """
         Loads and displays the conversation history from individual YAML files.
         """
-        history_list.clear()
+        self.history_list.clear()
 
-        # Initialize ConversationUtility to load data
-        conv_utility = ConversationUtility()
-
-        # Iterate over all files in the conversation directory
         if os.path.exists(CONVERSATION_PATH):
             for filename in os.listdir(CONVERSATION_PATH):
                 if filename.endswith(".yaml"):
                     unique_id = os.path.splitext(filename)[0]
-                    # The fix is here. The method signature expects `self` and `unique_id`.
-                    # The correct call is conv_utility.load_conversation(unique_id)
-                    # if load_conversation were an instance method.
-                    # Since it is a static method in the original file, it should be called as such.
-                    # This is likely a copy-paste error in the original code.
-                    # The correct call should not pass `conv_utility` twice
-                    conversation_data = ConversationUtility.load_conversation(unique_id)
+                    conversation_data = self.conv_utility.load_conversation(unique_id)
 
                     if conversation_data:
                         title = conversation_data.get("title", "Untitled Conversation")
-                        last_updated = conversation_data.get("last_updated", "N/A")
-
-                        # Add a new item to the list with the title and timestamp
-                        history_list.addItem(f"{title}: {last_updated}")
+                        # Store the unique_id in the QListWidgetItem's data for easy retrieval
+                        item = QListWidgetItem(f"{title}")
+                        item.setData(Qt.ItemDataRole.UserRole, unique_id)
+                        self.history_list.addItem(item)
                     else:
                         logger.warning(f"Failed to load data for file: {filename}")
         else:
-            history_list.addItem("No conversation history found.")
+            self.history_list.addItem("No conversation history found.")
+
+    def on_item_clicked(self, item):
+        """
+        Handler for when a history item is clicked.
+        Emits the unique ID of the selected conversation.
+        """
+        unique_id = item.data(Qt.ItemDataRole.UserRole)
+        if unique_id:
+            logger.info(f"Conversation with UUID {unique_id} selected from history.")
+            self.conversation_selected.emit(unique_id)
+
+    def refresh_history(self):
+        """
+        Slot to refresh the conversation history list.
+        """
+        logger.info("Refreshing conversation history list.")
+        self.load_history()
