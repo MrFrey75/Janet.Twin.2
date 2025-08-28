@@ -5,6 +5,7 @@ from typing import Dict, Any
 import requests
 import ollama
 
+
 class ConversationPlugin:
     """
     A simple plugin for handling mock conversational requests.
@@ -27,10 +28,9 @@ class ConversationPlugin:
                 messages=conversation_history
             )
             return response['message']['content']
+        except ollama.errors.ResponseError as e:
+            return f"Ollama API Error: {str(e)}. Please check your model configuration."
         except requests.exceptions.ConnectionError as e:
             return f"Error: Could not connect to Ollama. Please ensure the server is running. ({str(e)})"
         except Exception as e:
             return f"An unexpected error occurred with the Ollama plugin: {str(e)}"
-
-# The other classes from base_plugins.py would go here, unchanged.
-# For example, GoogleSearchPlugin, LogsSearch, etc.
