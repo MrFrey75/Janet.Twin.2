@@ -37,7 +37,18 @@ class ConversationUtility:
         return None
 
     @staticmethod
-    def delete_conversation(self, unique_id: str):
+    def delete_conversation_by_filename(filename: str) -> None:
+        """Delete a conversation's YAML file."""
+        filepath = os.path.join(CONVERSATION_PATH, filename)
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+                logger.info(f"Conversation file {filepath} deleted.")
+            except Exception as e:
+                logger.error(f"Error deleting conversation {filepath}: {e}")
+
+    @staticmethod
+    def delete_conversation(self: object, unique_id: str) -> None:
         """Delete a conversation's YAML file."""
         filename = f"{unique_id}.yaml"
         filepath = os.path.join(CONVERSATION_PATH, filename)
@@ -61,7 +72,7 @@ class ConversationUtility:
                 data = yaml.safe_load(f)
 
             if not data:
-                ConversationUtility.delete_conversation(filename)
+                ConversationUtility.delete_conversation_by_filename(filename)
                 continue
 
             conversation_dict["title"] = data.get("title", "Untitled")
