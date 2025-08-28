@@ -4,6 +4,8 @@ import os
 from typing import Dict, Any
 import requests
 import ollama
+import ollama.errors
+
 
 
 class ConversationPlugin:
