@@ -100,21 +100,21 @@ class LogViewerTool(QWidget):
                 if severity_filter != "ALL" and severity != severity_filter:
                     continue
 
-                format = QTextCharFormat()
+                color_format = QTextCharFormat()
                 color = self.return_severity_color(severity)
-                format.setForeground(color)
+                color_format.setForeground(color)
 
                 # Insert the formatted log line, including the date and severity,
                 # then a newline for proper spacing.
-                cursor.insertText(f"{date} - {severity} - {message}\n", format)
+                cursor.insertText(f"{date} - {severity} - {message}\n", color_format)
             else:
                 # If a line doesn't match the pattern, it's a raw message.
                 # Check if we should display it based on the 'MESSAGE' filter
                 if severity_filter == "MESSAGE" or severity_filter == "ALL":
-                    format = QTextCharFormat()
+                    color_format = QTextCharFormat()
                     color = self.return_severity_color("MESSAGE")
-                    format.setForeground(color)
-                    cursor.insertText(f"{line.strip()}\n", format)
+                    color_format.setForeground(color)
+                    cursor.insertText(f"{line.strip()}\n", color_format)
 
         # Scroll to the bottom to show the latest logs.
         self.log_display.moveCursor(QTextCursor.MoveOperation.End)

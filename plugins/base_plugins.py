@@ -8,6 +8,11 @@ class LogsSearch:
     A plugin for searching logs.
     """
 
+    def __init__(self):
+        self.log_dir = None
+        self.log_file = None
+        self.log_path = None
+
     def execute(self, payload: Dict[str, Any]) -> str:
         """
         Executes the log search based on the user's query.
@@ -60,7 +65,8 @@ class GoogleSearchPlugin:
     """
     A plugin for performing Google searches.
     """
-    def execute(self, payload: Dict[str, Any]) -> str:
+    @staticmethod
+    def execute(payload: Dict[str, Any]) -> str:
         """
         Provides a response based on the user's search query.
 
@@ -106,6 +112,7 @@ class ConversationPlugin:
     """
     A simple plugin for handling mock conversational requests.
     """
+    @staticmethod
     def execute(self, payload: Dict[str, Any]) -> str:
         """
         Provides a mock response based on the user's input.
