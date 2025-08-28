@@ -1,3 +1,4 @@
+ollama
 pyyaml
 pyqt6-sip
 # Core

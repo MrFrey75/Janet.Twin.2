@@ -1,10 +1,13 @@
 # File: main_window.py
 from datetime import datetime
+import sys
+import ollama
 
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, \
     QScrollArea, QSizePolicy, QTextEdit
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import Qt, pyqtSignal
+
 from src.janet_twin.utils.logger_utility import logger, log_message
 from src.janet_twin.utils.settings_utility import SettingsUtility
 from src.janet_twin.utils.conversation_utility import ConversationUtility
@@ -126,6 +129,33 @@ class GPTClientUI(QMainWindow):
 
         self.input_line.setFocus()
 
+    @staticmethod
+    def infer_intent_with_ollama(user_message):
+        """
+        Uses Ollama to infer the user's intent from the message and returns a command.
+        """
+        prompt = f"""
+        You are an intent classification assistant. Based on the user's message, determine the most appropriate command from the following list:
+        - 'search': The user wants to find information on the web.
+        - 'logsearch': The user wants to search through application logs.
+        - 'echo': The user wants you to repeat their message.
+        - 'conversation': All other conversational or general requests.
+
+        Respond with only the command name and nothing else.
+
+        User message: '{user_message}'
+        """
+        try:
+            response = ollama.generate(
+                model='llama3',
+                prompt=prompt,
+                stream=False
+            )
+            return response['response'].strip().lower()
+        except Exception as e:
+            logger.error(f"Ollama intent inference failed: {str(e)}")
+            return "conversation"
+
     def start_new_conversation(self):
         """
         Saves the current conversation and initializes a new one.
@@ -199,20 +229,26 @@ class GPTClientUI(QMainWindow):
 
         self.save_current_conversation()
 
-        command = None
+        # FIX: Corrected logic for handling invalid commands
+        command = "conversation"
         payload_text = text
 
         if ":" in text:
             parts = text.split(":", 1)
-            command = parts[0].strip().lower()
-            payload_text = parts[1].strip()
-
-        if not command or not self.plugin_registry.get(command):
-            command = "conversation"
-            payload_text = text
+            temp_command = parts[0].strip().lower()
+            if self.plugin_registry.get(temp_command):
+                command = temp_command
+                payload_text = parts[1].strip()
+        else:
+            command = self.infer_intent_with_ollama(text)
 
         payload = {"text": payload_text, "conversation_history": self.current_conversation.messages}
         task = Task(user=self.username, command=command, payload=payload)
+
+        task.intent = self.infer_intent_with_ollama(text)
+        logger.info(
+            f"Received task: {task.command} with payload: {task.payload} and intent: {task.intent}"
+        )
 
         response = self.orchestrator.handle(task)
 

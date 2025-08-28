@@ -5,7 +5,7 @@ class EchoPlugin:
     """
     A simple plugin that echoes the user's message.
     """
-    @staticmethod
+
     def execute(payload: Dict[str, Any]) -> str:
         """
         Executes the echo action.

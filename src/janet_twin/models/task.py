@@ -5,4 +5,5 @@ from typing import Any, Dict
 class Task:
     user: str
     command: str
+    intent: str = None
     payload: Dict[str, Any] = None

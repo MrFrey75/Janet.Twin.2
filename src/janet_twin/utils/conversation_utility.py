@@ -4,6 +4,7 @@ from src.janet_twin.utils.logger_utility import logger
 
 CONVERSATION_PATH = os.path.join("data", "conversations")
 
+
 class ConversationUtility:
     def __init__(self):
         if not os.path.exists(CONVERSATION_PATH):
@@ -61,22 +62,27 @@ class ConversationUtility:
 
     @staticmethod
     def get_conversation_dict():
-        """Get a dictionary of all conversation files in the data/conversations directory."""
+        """Get a list of dictionaries for all conversation files in the data/conversations directory."""
         conversation_list = []
-
-        conversation_dict = {}
         for filename in os.listdir(CONVERSATION_PATH):
             if not filename.endswith(".yaml"):
                 continue
-            with open(os.path.join(CONVERSATION_PATH, filename), "r") as f:
-                data = yaml.safe_load(f)
+            filepath = os.path.join(CONVERSATION_PATH, filename)
+            try:
+                with open(filepath, "r") as f:
+                    data = yaml.safe_load(f)
+            except Exception as e:
+                logger.error(f"Error loading conversation file {filepath}: {e}")
+                continue
 
             if not data:
                 ConversationUtility.delete_conversation_by_filename(filename)
                 continue
 
-            conversation_dict["title"] = data.get("title", "Untitled")
-            conversation_dict["filename"] = filename
-            conversation_dict["last_update"] = data.get("last_update", "")
-
-        return conversation_dict
+            conversation_list.append({
+                "title": data.get("title", "Untitled"),
+                "filename": filename,
+                "last_update": data.get("last_updated", ""),
+                "unique_id": data.get("unique_id", "")
+            })
+        return conversation_list

@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor
 from src.janet_twin.utils.logger_utility import logger, log_message
-
+from logging.handlers import RotatingFileHandler
 
 class LogViewerTool(QWidget):
     REFRESH_INTERVAL_MS = 2000  # Refresh every 2 seconds

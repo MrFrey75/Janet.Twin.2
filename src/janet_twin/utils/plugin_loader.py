@@ -1,7 +1,8 @@
 # File: plugin_loader.py
 from src.janet_twin.orchestrator.registry import PluginRegistry
 from plugins.echo_plugin import EchoPlugin
-from plugins.base_plugins import ConversationPlugin, GoogleSearchPlugin, LogsSearch
+from plugins.base_plugins import GoogleSearchPlugin, LogsSearch
+from plugins.conversation_plugin import ConversationPlugin
 
 def register_plugins(registry: PluginRegistry):
     """
